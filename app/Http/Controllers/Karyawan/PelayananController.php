@@ -32,20 +32,21 @@ class PelayananController extends Controller
     {
       try {
         DB::beginTransaction();
-        $order = new transaksi();
-        $order->invoice         = $request->invoice;
-        $order->tgl_transaksi   = Carbon::now()->parse($order->tgl_transaksi)->format('d-m-Y');
-        $order->status_payment  = $request->status_payment;
-        $order->harga_id        = $request->harga_id;
-        $order->customer_id     = $request->customer_id;
-        $order->user_id         = Auth::user()->id;
-        $order->customer        = namaCustomer($order->customer_id);
-        $order->email_customer  = email_customer($order->customer_id);
-        $order->hari            = $request->hari;
-        $order->kg              = $request->kg;
-        $order->harga           = $request->harga;
-        $order->disc            = $request->disc;
-        $hitung                 = $order->kg * $order->harga;
+        $order                 = new transaksi();
+        $order->invoice        = $request->invoice;
+        $order->tgl_transaksi  = Carbon::now()->parse($order->tgl_transaksi)->format('d-m-Y');
+        $order->status_payment = $request->status_payment;
+        $order->harga_id       = $request->harga_id;
+        $order->customer_id    = $request->customer_id;
+        $order->user_id        = Auth::user()->id;
+        $order->customer       = namaCustomer($order->customer_id);
+        $order->email_customer = email_customer($order->customer_id);
+        $order->hari           = $request->hari;
+        $order->kg             = $request->kg;
+        $order->harga          = $request->harga;
+        $order->disc           = $request->disc;
+        $hitung                = $order->kg * $order->harga;
+        $hitung                = round($hitung / 500) * 500;
         if ($request->disc != NULL) {
             $disc                = ($hitung * $order->disc) / 100;
             $total               = $hitung - $disc;
@@ -80,7 +81,7 @@ class PelayananController extends Controller
                 'harga'         => $order->harga,
                 'harga_disc'    => ($hitung * $order->disc) / 100,
                 'disc'          => $order->disc,
-                'total'         => $order->kg * $order->harga,
+                'total'         => ($order->kg * $order->harga) / 500 * 500,
                 'harga_akhir'   => $order->harga_akhir,
                 'laundry_name'  => Auth::user()->nama_cabang,
                 'bank'          => $bank
